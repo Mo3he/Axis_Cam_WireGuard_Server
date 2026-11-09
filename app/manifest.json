@@ -10,7 +10,12 @@
       "version": "0.1.0",
       "architecture": "BUILDARCH",
       "runMode": "respawn",
-      "compatibleOsVersions": [{ "min": "11.11", "max": "13" }]
+      "compatibleOsVersions": [
+        {
+          "min": "11.11",
+          "max": "13"
+        }
+      ]
     },
     "configuration": {
       "settingPage": "index.html",
@@ -27,16 +32,56 @@
         }
       ],
       "paramConfig": [
-        { "name": "Enabled", "default": "no", "type": "bool:no,yes" },
-        { "name": "PrivateKey", "default": "", "type": "password" },
-        { "name": "ListenPort", "default": "51820", "type": "string" },
-        { "name": "Address", "default": "10.66.0.1/24", "type": "string" },
-        { "name": "Peers", "default": "", "type": "string" },
-        { "name": "RouteSubnets", "default": "", "type": "string" },
-        { "name": "PeerToPeer", "default": "no", "type": "bool:no,yes" },
-        { "name": "MTU", "default": "1420", "type": "string" },
-        { "name": "PublicEndpoint", "default": "", "type": "string" },
-        { "name": "ClientDNS", "default": "", "type": "string" }
+        {
+          "name": "Enabled",
+          "default": "no",
+          "type": "bool:no,yes"
+        },
+        {
+          "name": "PrivateKey",
+          "default": "",
+          "type": "password"
+        },
+        {
+          "name": "ListenPort",
+          "default": "51820",
+          "type": "string"
+        },
+        {
+          "name": "Address",
+          "default": "10.66.0.1/24",
+          "type": "string"
+        },
+        {
+          "name": "Peers",
+          "default": "",
+          "type": "string"
+        },
+        {
+          "name": "RouteSubnets",
+          "default": "",
+          "type": "string"
+        },
+        {
+          "name": "PeerToPeer",
+          "default": "no",
+          "type": "bool:no,yes"
+        },
+        {
+          "name": "MTU",
+          "default": "1420",
+          "type": "string"
+        },
+        {
+          "name": "PublicEndpoint",
+          "default": "",
+          "type": "string"
+        },
+        {
+          "name": "ClientDNS",
+          "default": "",
+          "type": "string"
+        }
       ]
     }
   }
