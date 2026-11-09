@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+# Unit and loopback end-to-end tests for the WireGuard server daemon.
+set -eu
+cd "$(dirname "$0")/.."
+go vet ./...
+go test -race -count=1 ./...

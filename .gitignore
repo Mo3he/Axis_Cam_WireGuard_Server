@@ -1,0 +1,6 @@
+bin/
+*.eap
+localdata/
+.DS_Store
+.build/
+releases/
