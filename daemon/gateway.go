@@ -43,6 +43,11 @@ const (
 	maxUDPFlows    = 512
 )
 
+// tcpSendBuffer bounds the data gVisor pushes per connection towards a peer.
+// Every packet waiting inside wireguard-go pins a 64 KiB buffer on Linux, so an
+// unbounded (4 MiB) send buffer let one fast download hold ~100 MB.
+var tcpSendBuffer = 512 << 10
+
 type dialFunc func(ctx context.Context, network, address string) (net.Conn, error)
 
 // gateway is a tun.Device for wireguard-go. Packets between peers are relayed
@@ -94,6 +99,10 @@ func newGateway(server netip.Prefix, mtu int, peerToPeer bool, pol *policy, dial
 	sack := tcpip.TCPSACKEnabled(true)
 	if err := g.stack.SetTransportProtocolOption(tcp.ProtocolNumber, &sack); err != nil {
 		return nil, fmt.Errorf("enable TCP SACK: %v", err)
+	}
+	sndbuf := tcpip.TCPSendBufferSizeRangeOption{Min: 4 << 10, Default: tcpSendBuffer, Max: tcpSendBuffer}
+	if err := g.stack.SetTransportProtocolOption(tcp.ProtocolNumber, &sndbuf); err != nil {
+		return nil, fmt.Errorf("set TCP send buffer: %v", err)
 	}
 	g.ep.AddNotify(g)
 	if err := g.stack.CreateNIC(nicID, g.ep); err != nil {

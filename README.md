@@ -153,6 +153,11 @@ from a kernel WireGuard server:
 - **IPv4 only**, for both the tunnel and the routed subnets.
 - **LAN devices cannot open connections to peers.** Peers connect out to the
   LAN, not the other way round.
+  This includes RTP over UDP, so RTSP clients must use TCP transport
+  (interleaved RTP), which most clients fall back to automatically.
+- **Bounded per-connection buffering:** each TCP connection towards a peer
+  keeps at most 512 KiB in flight, which keeps memory use low on the camera and
+  still allows roughly 80 Mbit/s per connection at 50 ms round-trip time.
 - **Detected once per start:** the camera's LAN address and the `lan` subnet are
   read when the server starts, so restart the app after changing the camera's
   IP address.

@@ -12,6 +12,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"runtime/debug"
 	"syscall"
 	"time"
 )
@@ -21,10 +22,15 @@ const (
 	// target in manifest.json; see PARAM_CGI_FALLBACK.md in the portfolio repo.
 	statusAddr = "127.0.0.1:2212"
 	dataDir    = "localdata"
+
+	// memoryLimit is a soft limit that makes the runtime collect and return
+	// memory to the camera sooner after a traffic burst.
+	memoryLimit = 64 << 20
 )
 
 func main() {
 	log.SetFlags(0)
+	debug.SetMemoryLimit(memoryLimit)
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
 	defer stop()
