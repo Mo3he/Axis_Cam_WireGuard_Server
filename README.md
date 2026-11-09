@@ -93,7 +93,7 @@ the settings page.
 | `Enabled` | `no` | Runs the WireGuard server when `yes`. |
 | `ListenPort` | `51820` | UDP port the server listens on (1024 to 65535). |
 | `Address` | `10.66.0.1/24` | Server tunnel address; the prefix is the client address pool. |
-| `Peers` | empty | Peers as `name,publicKey,address` records separated by `;`. |
+| `Peers` | empty | Peers as `name,publicKey,address` records separated by `;`. Up to 100 peers. |
 | `RouteSubnets` | empty | Subnets peers may reach through the camera, comma separated. `lan` means the camera's own subnet. Empty means camera only. |
 | `PeerToPeer` | `no` | Lets peers reach each other through the camera. |
 | `MTU` | `1420` | Tunnel MTU (576 to 1500). |
@@ -103,6 +103,10 @@ the settings page.
 
 Changing `PublicEndpoint` or `ClientDNS` does not restart the server; any other
 change restarts it, and clients reconnect within seconds.
+
+The camera's parameter store limits how long a value can be, which is what caps
+the peer list at 100. If a value is refused, the settings endpoint answers
+`422` and names the parameter rather than reporting success.
 
 The settings page reads and writes through the app's own endpoint at
 `/local/WireGuard_Server/api/settings`, served by the app itself and reachable

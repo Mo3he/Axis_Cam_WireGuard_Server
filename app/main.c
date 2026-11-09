@@ -258,8 +258,10 @@ static gchar *url_decode(const char *value, gsize length) {
     return decoded;
 }
 
-/* Applies an application/x-www-form-urlencoded body, ignoring unknown keys. */
-static gboolean apply_settings_body(const char *body) {
+/* Applies an application/x-www-form-urlencoded body, ignoring unknown keys.
+ * Names the store refused (for example a value over its length limit) are
+ * appended to failed, so the caller can report them instead of claiming success. */
+static gboolean apply_settings_body(const char *body, GString *failed) {
     gchar **pairs = g_strsplit(body ? body : "", "&", -1);
     gboolean changed = FALSE;
 
@@ -284,6 +286,9 @@ static gboolean apply_settings_body(const char *body) {
                 changed = TRUE;
         } else {
             syslog(LOG_ERR, "write parameter %s failed: %s", parameter->name, error ? error->message : "unknown error");
+            if (failed->len)
+                g_string_append_c(failed, ',');
+            g_string_append(failed, parameter->name);
         }
 
         g_clear_error(&error);
@@ -359,9 +364,19 @@ static gboolean on_settings_request(GSocketService *service, GSocketConnection *
             g_free(json);
         } else if (is_post && is_settings) {
             gchar *body = g_strndup(buffer + header_length, total - header_length);
-            gboolean changed = apply_settings_body(body);
+            GString *failed = g_string_new(NULL);
+            gboolean changed = apply_settings_body(body, failed);
             g_free(body);
-            send_response(out, "200 OK", "application/json", "{\"status\":\"ok\"}");
+            if (failed->len) {
+                GString *json = g_string_new("{\"status\":\"error\",\"failed\":\"");
+                json_append_escaped(json, failed->str);
+                g_string_append(json, "\"}");
+                send_response(out, "422 Unprocessable Entity", "application/json", json->str);
+                g_string_free(json, TRUE);
+            } else {
+                send_response(out, "200 OK", "application/json", "{\"status\":\"ok\"}");
+            }
+            g_string_free(failed, TRUE);
             if (changed)
                 apply_configuration();
         } else {

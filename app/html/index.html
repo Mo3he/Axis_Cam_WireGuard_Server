@@ -368,6 +368,9 @@
     </script>
     <script>
       const APP = "WireGuard_Server";
+      // The camera's parameter store refuses long values; 100 peers is well below
+      // the limit measured on AXIS OS 12.
+      const MAX_PEERS = 100;
       const PARAM_CGI = "/axis-cgi/param.cgi";
       const $ = (id) => document.getElementById(id);
 
@@ -423,7 +426,12 @@
             body,
           });
           if (response.ok) return;
+          if (response.status === 422) {
+            const result = await response.json().catch(() => ({}));
+            throw new Error(`the camera refused to store ${result.failed || "the settings"}`);
+          }
         } catch (error) {
+          if (error.message.startsWith("the camera refused")) throw error;
           /* fall through to param.cgi */
         }
         const query = Object.entries(values)
@@ -757,6 +765,7 @@
         const peers = parsePeers(settings.Peers);
 
         if (!name) return alert("Enter a name.");
+        if (peers.length >= MAX_PEERS) return alert(`The server supports up to ${MAX_PEERS} peers.`);
         if (!net || addr === null || addr <= net.network || addr >= net.broadcast || addr === net.addr) {
           return alert(`The address must be a free host address in ${net ? net.subnet : "the tunnel subnet"}.`);
         }
@@ -777,6 +786,9 @@
         try {
           await writeSettings({ Peers: serializePeers(peers) });
           await loadSettings();
+          if (!parsePeers(settings.Peers).some((p) => p.publicKey === publicKey)) {
+            throw new Error("the camera did not store the new peer");
+          }
           showClientConfig(name, address, privateKey);
           $("peer-name").value = "";
           $("peer-pubkey").value = "";
