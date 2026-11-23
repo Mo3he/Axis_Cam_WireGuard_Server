@@ -4,7 +4,7 @@
 #
 # Prefer ./build.sh, which does both and collects the .eap files in ./releases.
 ARG ARCH=aarch64
-ARG GO_VERSION=1.27.3
+ARG GO_VERSION=1.27.4
 ARG SDK_VERSION=12.10.0
 ARG UBUNTU_VERSION=24.04
 ARG SDK_REPO=axisecp
