@@ -3,7 +3,7 @@ module github.com/Mo3he/Axis_Cam_WireGuard_Server
 go 1.26.0
 
 require (
-	golang.org/x/net v0.62.0
+	golang.org/x/net v0.63.0
 	golang.zx2c4.com/wireguard v0.0.0-20261024220952-b3bc704ef0ee
 	gvisor.dev/gvisor v0.0.0-20250503011706-39ed1f5ac29c
 )
