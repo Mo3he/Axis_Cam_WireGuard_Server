@@ -91,9 +91,9 @@ the settings page.
 | Parameter | Default | Description |
 |---|---|---|
 | `Enabled` | `no` | Runs the WireGuard server when `yes`. |
-| `ListenPort` | `51820` | UDP port the server listens on (1024 to 65535). |
+| `ListenPort` | `51820` | UDP port the server listens on (1024 to 65535). NetBird also uses `51820` by default: on a camera running both, give one of them another port, or the server reports `address already in use`. |
 | `Address` | `10.66.0.1/24` | Server tunnel address; the prefix is the client address pool. |
-| `Peers` | empty | Peers as `name,publicKey,address` records separated by `;`. Up to 100 peers. |
+| `Peers` | empty | Peers as `name,publicKey,address` records separated by `;`. Up to 100 peers; later ones are not added and are listed under peer errors in the status. |
 | `RouteSubnets` | empty | Subnets peers may reach through the camera, comma separated. `lan` means the camera's own subnet. Empty means camera only. |
 | `PeerToPeer` | `no` | Lets peers reach each other through the camera. |
 | `MTU` | `1420` | Tunnel MTU (576 to 1500). |
