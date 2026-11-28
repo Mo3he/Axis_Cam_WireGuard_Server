@@ -104,6 +104,9 @@ func parseConfig(get func(string) string) (*config, error) {
 	return cfg, nil
 }
 
+// maxPeers is the documented limit; later records are reported, not served.
+const maxPeers = 100
+
 // parsePeers reads "name,publicKey,address" records separated by ";".
 func parsePeers(raw string, server netip.Prefix) ([]peer, []string) {
 	var peers []peer
@@ -149,6 +152,10 @@ func parsePeers(raw string, server netip.Prefix) ([]peer, []string) {
 		}
 		if seenAddrs[addr] {
 			problems = append(problems, fmt.Sprintf("peer %s: duplicate address %s", label, addr))
+			continue
+		}
+		if len(peers) == maxPeers {
+			problems = append(problems, fmt.Sprintf("peer %s: more than %d peers, not added", label, maxPeers))
 			continue
 		}
 		seenKeys[key] = true

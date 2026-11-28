@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/base64"
+	"fmt"
 	"net/netip"
 	"os"
 	"path/filepath"
@@ -197,5 +198,20 @@ func TestPublicKey(t *testing.T) {
 	}
 	if got := hexString(pub[:]); got != "8520f0098930a754748b7ddcb43ef75a0dbf3a0d26381af4eba4a98eaa9b4e6a" {
 		t.Fatalf("public key %s", got)
+	}
+}
+
+func TestParsePeersStopsAtTheLimit(t *testing.T) {
+	server := netip.MustParsePrefix("10.66.0.1/16")
+	records := make([]string, 0, maxPeers+1)
+	for i := 0; i <= maxPeers; i++ {
+		records = append(records, fmt.Sprintf("p%d,%s,10.66.1.%d", i, testKey(byte(i+10)), i+2))
+	}
+	peers, problems := parsePeers(strings.Join(records, ";"), server)
+	if len(peers) != maxPeers {
+		t.Fatalf("%d peers served, want %d", len(peers), maxPeers)
+	}
+	if len(problems) != 1 || !strings.Contains(problems[0], fmt.Sprintf("p%d", maxPeers)) {
+		t.Fatalf("problems = %v, want one naming the extra peer", problems)
 	}
 }
